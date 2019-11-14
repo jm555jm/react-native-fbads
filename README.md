@@ -29,30 +29,69 @@
 Follow the instructions on [react-native-fbsdk](https://github.com/facebook/react-native-fbsdk) to integrate the Facebook SDK into your project.
 Note that for iOS, it's [recommended you use Cocoapods](https://developers.facebook.com/docs/ios/getting-started/advanced) rather than the manual installation.
 
-### 2. (iOS only) Integrate Facebook Audience Network
+### 2. Integrate Facebook Audience Network
+
+#### For iOS:
 
 1. Add the following Pod to your Podfile:
 
 ```
-pod 'FBAudienceNetwork'
+pod 'FBAudienceNetwork', '~> 5.1.0'
 ```
 
 2. Run `pod install`
 
 If you didn't use Cocoapods to integrate the Facebook SDK, you'll need to manually add the audience network framework file to your project.
 
+#### For Android:
+
+1. The library will automatically add audience-network-sdk to your dependencies. There is no need to add the audience network artifact to your build.gradle.
+
+2. In `MainApplication.java`, initialize the SDK inside `onCreate`:
+
+```java
+
+import com.facebook.ads.AudienceNetworkAds; // <-- add this
+import suraj.tiwari.reactnativefbads.FBAdsPackage; // <-- add this
+
+public class MainApplication extends Application implements ReactApplication {
+...
+  @Override 
+  public void onCreate() {
+    super.onCreate();
+    AudienceNetworkAds.initialize(this); // <-- add this
+  }
+  @Override
+  protected List<ReactPackage> getPackages() {
+    return Arrays.<ReactPackage>asList(
+          new FBAdsPackage()   // <-- add this
+    );
+  }
+...
+}
+```
+
 ### 3. Install The Javascript Package
 
 Add the package to your project using your favorite package manager
 
 ```bash
-$ yarn install react-native-fbads
+$ yarn add react-native-fbads
 ```
 
 Link the native dependencies
 
 ```bash
 $ react-native link react-native-fbads
+```
+
+#### For RN < 0.60 
+If you have more than one Targets on your Xcode project, you might link some of them manually by dragging `Libraries/ReactNativeAdsFacebook.xcodeproj/Products/libReactNativeAdsFacebook.a` to 'Build Phases' -> 'Link Binary With Libraries'.
+
+#### For RN >= 0.60 
+If you are working with RN > 0.60 kindly add the following line in your `Podfile`
+```
+pod 'ReactNativeAdsFacebook', :path => '../node_modules/react-native-fbads'
 ```
 
 ### 4. Get a Placement ID
@@ -138,7 +177,7 @@ import {
   AdIconView,
   MediaView,
   AdChoicesView,
-  TriggerableView,
+  TriggerableView
 } from 'react-native-fbads';
 class AdComponent extends React.Component {
   render() {
@@ -220,6 +259,7 @@ function ViewWithBanner(props) {
         placementId="YOUR_BANNER_PLACEMENT_ID"
         type="standard"
         onPress={() => console.log('click')}
+        onLoad={() => console.log('loaded')}
         onError={err => console.log('error', err)}
       />
     </View>
@@ -265,10 +305,11 @@ Constant which contains current device's hash id.
 
 #### addTestDevice
 
-Registers given device to receive test ads. When running on a real device, call this method with the result of  `AdSettings.currentDeviceHash` to get test ads. 
+Registers given device to receive test ads. When running on a real device, call this method with the result of `AdSettings.currentDeviceHash` to get test ads.
 Do not call this method in production.
 
 You should register test devices before displaying any ads or creating any ad managers.
+
 ```js
 AdSettings.addTestDevice('hash');
 ```

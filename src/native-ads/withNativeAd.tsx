@@ -11,7 +11,7 @@ import {
   MediaViewContext,
   MediaViewContextValueType,
   TriggerableContext,
-  TriggerableContextValueType,
+  TriggerableContextValueType
 } from './contexts';
 import { HasNativeAd, NativeAd } from './nativeAd';
 import AdsManager from './NativeAdsManager';
@@ -42,12 +42,12 @@ interface AdWrapperProps {
 
 export default <T extends HasNativeAd>(
   // tslint:disable-next-line:variable-name
-  Component: React.ComponentType<T>,
+  Component: React.ComponentType<T>
 ) =>
   class NativeAdWrapper extends React.Component<
     AdWrapperProps & T,
     AdWrapperState
-  > {
+    > {
     private subscription?: EventSubscription;
     private subscriptionError?: EventSubscription;
     private nativeAdViewRef?: React.Component;
@@ -61,17 +61,17 @@ export default <T extends HasNativeAd>(
 
       this.registerFunctionsForTriggerables = {
         register: this.registerClickableChild,
-        unregister: this.unregisterClickableChild,
+        unregister: this.unregisterClickableChild
       };
 
       this.registerFunctionsForMediaView = {
         unregister: this.unregisterMediaView,
-        register: this.registerMediaView,
+        register: this.registerMediaView
       };
 
       this.registerFunctionsForAdIconView = {
         unregister: this.unregisterAdIconView,
-        register: this.registerAdIconView,
+        register: this.registerAdIconView
       };
 
       this.clickableChildrenNodeHandles = new Map();
@@ -81,7 +81,7 @@ export default <T extends HasNativeAd>(
         mediaViewNodeHandle: -1,
         adIconViewNodeHandle: -1,
         clickableChildren: new Set(),
-        canRequestAds: false,
+        canRequestAds: false
       };
     }
 
@@ -90,15 +90,14 @@ export default <T extends HasNativeAd>(
      */
     public componentDidMount() {
       this.subscription = this.props.adsManager.onAdsLoaded(() =>
-        this.setState({ canRequestAds: true }),
+        this.setState({ canRequestAds: true })
       );
-      this.subscriptionError = this.props.adsManager.onAdsError(() =>
-        {
-          this.setState({ canRequestAds: false }, () => {
-            this.props.onAdError &&
+      this.subscriptionError = this.props.adsManager.onAdsError(() => {
+        this.setState({ canRequestAds: false }, () => {
+          this.props.onAdError &&
             this.props.onAdError()
-          })
-        },
+        })
+      },
       );
     }
 
@@ -118,7 +117,7 @@ export default <T extends HasNativeAd>(
         this.state.adIconViewNodeHandle !== prevState.adIconViewNodeHandle;
       const clickableChildrenChanged = areSetsEqual(
         prevState.clickableChildren,
-        this.state.clickableChildren,
+        this.state.clickableChildren
       );
 
       if (
@@ -126,11 +125,17 @@ export default <T extends HasNativeAd>(
         adIconViewNodeHandleChanged ||
         clickableChildrenChanged
       ) {
+        const viewHandle = findNodeHandle(this.nativeAdViewRef!);
+        if (!viewHandle) {
+          // Skip registration if the view is no longer valid.
+          return;
+        }
+
         AdsManager.registerViewsForInteractionAsync(
-          findNodeHandle(this.nativeAdViewRef!)!,
+          viewHandle,
           this.state.mediaViewNodeHandle,
           this.state.adIconViewNodeHandle,
-          [...this.state.clickableChildren],
+          [...this.state.clickableChildren]
         );
       }
     }
@@ -148,47 +153,52 @@ export default <T extends HasNativeAd>(
     }
 
     private registerMediaView = (mediaView: ComponentOrClass) =>
-      this.setState({ mediaViewNodeHandle: findNodeHandle(mediaView) || -1 })
+      this.setState({ mediaViewNodeHandle: findNodeHandle(mediaView) || -1 });
     private unregisterMediaView = () =>
-      this.setState({ mediaViewNodeHandle: -1 })
+      this.setState({ mediaViewNodeHandle: -1 });
 
     private registerAdIconView = (adIconView: ComponentOrClass) =>
-      this.setState({ adIconViewNodeHandle: findNodeHandle(adIconView) || -1 })
+      this.setState({ adIconViewNodeHandle: findNodeHandle(adIconView) || -1 });
     private unregisterAdIconView = () =>
-      this.setState({ adIconViewNodeHandle: -1 })
+      this.setState({ adIconViewNodeHandle: -1 });
 
     private registerClickableChild = (child: ComponentOrClass) => {
-      const handle = findNodeHandle(child) || -1;
+      const handle = findNodeHandle(child);
+
+      if (!handle) {
+        return;
+      }
+
       this.clickableChildrenNodeHandles.set(child, handle);
 
       this.setState({
-        clickableChildren: this.state.clickableChildren.add(handle),
+        clickableChildren: this.state.clickableChildren.add(handle)
       });
-    }
+    };
 
     private unregisterClickableChild = (child: ComponentOrClass) => {
       this.setState(({ clickableChildren }) => {
         const newClickableChildren = new Set(clickableChildren);
         newClickableChildren.delete(
-          this.clickableChildrenNodeHandles.get(child)!,
+          this.clickableChildrenNodeHandles.get(child)!
         );
         this.clickableChildrenNodeHandles.delete(child);
         return { clickableChildren: newClickableChildren };
       });
-    }
+    };
 
     private handleAdUpdated = () =>
       this.state.ad &&
       this.props.onAdLoaded &&
-      this.props.onAdLoaded(this.state.ad)
+      this.props.onAdLoaded(this.state.ad);
 
     private handleAdLoaded = ({ nativeEvent }: { nativeEvent: NativeAd }) => {
       this.setState({ ad: nativeEvent }, this.handleAdUpdated);
-    }
+    };
 
     private handleNativeAdViewMount = (ref: React.Component) => {
       this.nativeAdViewRef = ref;
-    }
+    };
 
     private renderAdComponent(componentProps: T): ReactNode {
       if (!this.state.ad) {

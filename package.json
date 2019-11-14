@@ -1,12 +1,13 @@
 {
   "name": "react-native-fbads",
-  "version": "5.0.1",
+  "version": "6.3.0",
   "description": "Native Facebook Ads for React Native",
   "repository": {
     "type": "git",
-    "url": "https://github.com/callstack-io/react-native-fbads"
+    "url": "https://github.com/callstack/react-native-fbads"
   },
-  "main": "src/index.ts",
+  "homepage": "https://github.com/callstack/react-native-fbads",
+  "main": "dist/lib/index.js",
   "typings": "dist/types/index.d.ts",
   "directories": {
     "example": "example"
@@ -18,25 +19,18 @@
   "author": "Suraj Tiwari <surajtiwari020@gmail.com>",
   "license": "MIT",
   "peerDependencies": {
-    "react": "*",
     "react-native": "*"
   },
   "dependencies": {
     "fbemitter": "^2.1.1"
   },
   "devDependencies": {
-    "@callstack/eslint-config": "^2.0.0",
-    "eslint": "^5.6.1",
-    "eslint-plugin-react-native": "^3.3.0",
-    "flow-bin": "~0.67.1",
-    "react": "16.3.1",
-    "react-dom": "16.3.1",
-    "react-native": "~0.55.4"
-  },
-  "rnpm": {
-    "android": {
-      "sourceDir": "android/app"
-    }
+    "@types/fbemitter": "^2.0.32",
+    "@types/react-native": "^0.57.4",
+    "tslint": "^5.11.0",
+    "tslint-config-airbnb": "^5.11.0",
+    "tslint-config-prettier": "^1.15.0",
+    "typescript": "^3.1.2"
   },
   "keywords": [
     "react-native",
@@ -44,11 +38,14 @@
     "Audience Network",
     "Native ads"
   ],
-  "devDependencies": {
-    "@types/fbemitter": "^2.0.32",
-    "@types/react-native": "^0.57.4",
-    "tslint": "^5.11.0",
-    "tslint-config-airbnb": "^5.11.0",
-    "typescript": "^3.1.2"
-  }
+  "files": [
+    "android",
+    "ios",
+    "src",
+    "LICENSE",
+    "package.json",
+    "yarn.lock",
+    "dist",
+    "ReactNativeAdsFacebook.podspec"
+  ]
 }
