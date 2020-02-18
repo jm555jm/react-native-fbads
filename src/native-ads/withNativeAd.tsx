@@ -1,8 +1,8 @@
 import { EventSubscription } from 'fbemitter';
 import React, { ReactNode } from 'react';
 import { findNodeHandle, requireNativeComponent } from 'react-native';
-import MediaView from './MediaViewManager'
-import AdIconView from './AdIconViewManager'
+import MediaView from './MediaViewManager';
+import AdIconView from './AdIconViewManager';
 import {
   AdChoicesViewContext,
   AdIconViewContext,
@@ -47,7 +47,7 @@ export default <T extends HasNativeAd>(
   class NativeAdWrapper extends React.Component<
     AdWrapperProps & T,
     AdWrapperState
-    > {
+  > {
     private subscription?: EventSubscription;
     private subscriptionError?: EventSubscription;
     private nativeAdViewRef?: React.Component;
@@ -92,13 +92,11 @@ export default <T extends HasNativeAd>(
       this.subscription = this.props.adsManager.onAdsLoaded(() =>
         this.setState({ canRequestAds: true })
       );
-      this.subscriptionError = this.props.adsManager.onAdsError(() => {
+      this.subscriptionError = this.props.adsManager.onAdsError((err: any) => {
         this.setState({ canRequestAds: false }, () => {
-          this.props.onAdError &&
-            this.props.onAdError()
-        })
-      },
-      );
+          this.props.onAdError && this.props.onAdError(err);
+        });
+      });
     }
 
     public componentDidUpdate(_: AdWrapperProps, prevState: AdWrapperState) {
