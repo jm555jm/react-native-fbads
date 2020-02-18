@@ -37,8 +37,7 @@ RCT_EXPORT_MODULE(AdChoicesView)
     return [[AdChoiceView new] initWithBridge:_bridge];
 }
 
-+ (BOOL)requiresMainQueueSetup
-{
++ (BOOL) requiresMainQueueSetup {
     return YES;
 }
 
